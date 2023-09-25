@@ -2,12 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 )
-
-const url = "localhost:8080"
 
 func home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
@@ -33,15 +30,4 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write([]byte("New snippet form\n"))
-}
-
-func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet", showSnippet)
-	mux.HandleFunc("/snippet/create", createSnippet)
-
-	log.Printf("starting web server on %s", url)
-	err := http.ListenAndServe(url, mux)
-	log.Fatal(err)
 }
