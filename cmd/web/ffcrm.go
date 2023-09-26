@@ -3,50 +3,34 @@ package main
 import (
 	"log"
 	"net/http"
-	"path/filepath"
+	"os"
 )
 
 const url = "localhost:8080"
 
+type application struct {
+	errLog  *log.Logger
+	infoLog *log.Logger
+}
+
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet", showSnippet)
-	mux.HandleFunc("/snippet/create", createSnippet)
+	var infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	var errLog = log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	fileServer := http.FileServer(neuteredFileSystem{http.Dir("./ui/static")})
-	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
-
-	log.Printf("starting web server on %s", url)
-	err := http.ListenAndServe(url, mux)
-	log.Fatal(err)
-}
-
-type neuteredFileSystem struct {
-	fs http.FileSystem
-}
-
-func (nfs neuteredFileSystem) Open(path string) (http.File, error) {
-	f, err := nfs.fs.Open(path)
-	if err != nil {
-		return nil, err
+	app := application{
+		errLog:  errLog,
+		infoLog: infoLog,
 	}
 
-	s, err := f.Stat()
-	if err != nil {
-		return nil, err
+	mux := app.routes()
+
+	srv := &http.Server{
+		Addr:     url,
+		ErrorLog: errLog,
+		Handler:  mux,
 	}
 
-	if s.IsDir() {
-		index := filepath.Join(path, "index.html")
-		if _, err := nfs.fs.Open(index); err != nil {
-			closeErr := f.Close()
-			if closeErr != nil {
-				return nil, closeErr
-			}
-			return nil, err
-		}
-	}
-
-	return f, nil
+	infoLog.Printf("starting web server on %s", url)
+	err := srv.ListenAndServe()
+	errLog.Fatal(err)
 }
