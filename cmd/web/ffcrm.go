@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"solineun/ffcrm/pkg/models/pg"
+
 	_ "github.com/lib/pq"
 )
 
@@ -13,6 +15,7 @@ const url = "localhost:8080"
 type application struct {
 	errLog  *log.Logger
 	infoLog *log.Logger
+	orders *pg.OrderModel
 }
 
 func main() {
@@ -29,6 +32,7 @@ func main() {
 	app := application{
 		errLog:  errLog,
 		infoLog: infoLog,
+		orders: &pg.OrderModel{DB: db},
 	}
 
 	mux := app.routes()
