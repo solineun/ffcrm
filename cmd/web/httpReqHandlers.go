@@ -43,5 +43,13 @@ func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
-	w.Write([]byte("New snippet form\n"))
+
+	productName := "test"
+	id, err := app.orders.Insert(productName)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/order?id=%d", id), http.StatusSeeOther)
 }
