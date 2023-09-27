@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
+	"solineun/ffcrm/pkg/models"
 	"strconv"
 )
 
@@ -34,7 +36,18 @@ func (app *application) showOrder(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
-	fmt.Fprintf(w, "Snippet page with id=%d \n", id)
+	
+	order, err := app.orders.Get(&id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	fmt.Fprint(w, order.Format())
 }
 
 func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
