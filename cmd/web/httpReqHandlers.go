@@ -14,6 +14,19 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
+
+	orders, err := app.orders.Latest()
+	if err !=  nil {
+		if !errors.Is(err, models.ErrNoRecord) {
+			app.serverError(w, err)
+			return
+		}
+	}
+
+	for _, o := range orders {
+		fmt.Fprint(w, o.Format())
+	}
+
 	files := []string{
 		"./ui/html/home.page.tmpl",
 		"./ui/html/base.layout.tmpl",
@@ -24,6 +37,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
 	err = ts.Execute(w, nil)
 	if err != nil {
 		app.serverError(w, err)

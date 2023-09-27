@@ -39,9 +39,36 @@ func (om *OrderModel) Get(id *int) (*models.Order, error) {
 }
 
 func (om *OrderModel) Latest() ([]*models.Order, error) {
-	return nil, nil
+	query := `SELECT sub.* 
+				FROM (SELECT * 
+					FROM orders 
+					ORDER BY created DESC 
+					LIMIT 5
+					) sub 
+				ORDER BY created ASC`
+
+	rows, err := om.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var orders []*models.Order
+	
+	for rows.Next() {
+		o := new(models.Order)
+		if err := rows.Scan(
+			&o.Id, &o.ProductName, &o.Created); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return orders, models.ErrNoRecord
+			}
+			return orders, err
+		}
+		orders = append(orders, o)
+	}
+	if err = rows.Err(); err != nil {
+		return orders, err
+	}
+	return orders, nil
 }
 
-func (om *OrderModel) IsEmpty(o *models.Order) bool {
-	return *o == models.Order{}
-}

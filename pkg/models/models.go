@@ -15,5 +15,8 @@ type Order struct {
 }
 
 func (o Order) Format() string {
-	return fmt.Sprintf("Oder id: %d\nProduct Name: %s\nCreated at: %s\n", o.Id, o.ProductName, o.Created.String())
+	return fmt.Sprintf(
+		"Oder id: %d\nProduct Name:" +  
+		"%s\nCreated at: %s\n______________________\n", 
+		o.Id, o.ProductName, o.Created.String())
 }

@@ -12,11 +12,11 @@ type pgConfig struct {
 
 func getConfig() pgConfig {
 	return pgConfig {
-	host: "localhost",
-	port:      5432,
-	user: "postgres",
-	passwd: "pass",
-	dbName: "ffcrm",
+		host: "localhost",
+		port:      5432,
+		user: "postgres",
+		passwd: "pass",
+		dbName: "ffcrm",
 	}
 }
 
