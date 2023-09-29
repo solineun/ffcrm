@@ -1,0 +1,16 @@
+{{template "base" .}}
+ 
+{{define "title"}}Order #{{.Order.Id}}{{end}}
+ 
+{{define "main"}}
+<div class='order'>
+    <div class='metadata'>
+        <strong>{{.Order.ProductName}}</strong>
+        <span>#{{.Order.Id}}</span>
+    </div>
+    <pre><code>Description</code></pre>
+    <div class='metadata'>
+        <time>Created: {{.Order.Created}}</time>
+    </div>
+</div>
+{{end}}

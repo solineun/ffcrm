@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"solineun/ffcrm/pkg/models"
+
+	"github.com/lib/pq"
 )
 
 type OrderModel struct {
@@ -16,7 +18,10 @@ func (om *OrderModel) Insert(productName string) (int, error) {
 
 	var id int
 	err := om.DB.QueryRow(query, productName).Scan(&id)
-	if err != nil {
+	if err, ok := err.(*pq.Error); ok {
+		if err.Code.Name() == "string_data_right_truncation" {
+			return 0, models.ErrLongValue
+		}
 		return 0, err
 	}
 

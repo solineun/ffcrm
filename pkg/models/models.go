@@ -7,6 +7,7 @@ import (
 )
 
 var ErrNoRecord = errors.New("models: no matching entry found")
+var ErrLongValue = errors.New("models: value too long")
 
 type Order struct {
 	Id int

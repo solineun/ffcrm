@@ -4,10 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"solineun/ffcrm/pkg/models"
 	"strconv"
 )
+
+type templateData struct {
+	Order *models.Order
+	LastFive []*models.Order
+}
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
@@ -23,23 +29,13 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	for _, o := range orders {
-		fmt.Fprint(w, o.Format())
-	}
-
 	files := []string{
 		"./ui/html/home.page.tmpl",
 		"./ui/html/base.layout.tmpl",
 		"./ui/html/footer.partial.tmpl",
 	}
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	err = ts.Execute(w, nil)
-	if err != nil {
+	
+	if err = renderTemplate(w, files, orders); err != nil {
 		app.serverError(w, err)
 	}
 }
@@ -61,7 +57,17 @@ func (app *application) showOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, order.Format())
+	data := templateData{Order: order}
+
+	files := []string{
+		"./ui/html/show.page.tmpl",
+		"./ui/html/base.layout.tmpl",
+		"./ui/html/footer.partial.tmpl",
+	}
+
+	if err = renderTemplate(w, files, data); err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
@@ -71,12 +77,29 @@ func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productName := "test"
+	productName := "**********************************************************************"
 	id, err := app.orders.Insert(productName)
 	if err != nil {
+		if errors.Is(err, models.ErrLongValue) {
+			app.clientError(w, http.StatusBadRequest)
+			return
+		}
 		app.serverError(w, err)
 		return
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/order?id=%d", id), http.StatusSeeOther)
+}
+
+func renderTemplate(w io.Writer, files []string, data any) error {
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		return err
+	}
+
+	err = ts.Execute(w, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }
