@@ -4,4 +4,22 @@
 
 {{define "main"}}
 <h2>Last 5 orders</h2>
+    {{if .LastFive}}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Created</th>
+            </tr>
+            {{ range .LastFive }}
+            <tr>
+                <td><a href='/order?id={{.Id}}'>{{.Id}}</a></td>
+                <td>{{.ProductName}}</td>
+                <td>#{{.Created}}</td>
+            </tr>
+            {{end}}
+        </table>
+    {{ else }}
+        <p>No data</p>
+    {{ end }}
 {{end}}
