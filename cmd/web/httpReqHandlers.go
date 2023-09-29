@@ -29,13 +29,15 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	data := templateData{LastFive: orders}
+
 	files := []string{
 		"./ui/html/home.page.tmpl",
 		"./ui/html/base.layout.tmpl",
 		"./ui/html/footer.partial.tmpl",
 	}
 	
-	if err = renderTemplate(w, files, orders); err != nil {
+	if err = renderTemplate(w, files, data); err != nil {
 		app.serverError(w, err)
 	}
 }
@@ -77,7 +79,7 @@ func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productName := "**********************************************************************"
+	productName := "test"
 	id, err := app.orders.Insert(productName)
 	if err != nil {
 		if errors.Is(err, models.ErrLongValue) {
