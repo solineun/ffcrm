@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type pgConfig struct {
 	host string
@@ -24,4 +27,15 @@ func (pgc pgConfig) format() string {
 	return fmt.Sprintf("host=%s port=%d user=%s "+
     "password=%s dbname=%s sslmode=disable",
     pgc.host, pgc.port, pgc.user, pgc.passwd, pgc.dbName)	
+}
+
+func openDb(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }

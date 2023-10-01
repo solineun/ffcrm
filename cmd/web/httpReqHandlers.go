@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
 	"solineun/ffcrm/pkg/models"
 	"strconv"
@@ -31,7 +30,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 	data := templateData{LastFive: orders}
 
-	files := []string{
+	files := []string {
 		"./ui/html/home.page.tmpl",
 		"./ui/html/base.layout.tmpl",
 		"./ui/html/footer.partial.tmpl",
@@ -61,7 +60,7 @@ func (app *application) showOrder(w http.ResponseWriter, r *http.Request) {
 
 	data := templateData{Order: order}
 
-	files := []string{
+	files := []string {
 		"./ui/html/show.page.tmpl",
 		"./ui/html/base.layout.tmpl",
 		"./ui/html/footer.partial.tmpl",
@@ -93,7 +92,7 @@ func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/order?id=%d", id), http.StatusSeeOther)
 }
 
-func renderTemplate(w io.Writer, files []string, data any) error {
+func renderTemplate(w http.ResponseWriter, files []string, data templateData) error {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		return err

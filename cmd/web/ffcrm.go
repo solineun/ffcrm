@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +31,7 @@ func main() {
 		url: "localhost:8080",
 		errLog:  errLog,
 		infoLog: infoLog,
-		orders: &pg.OrderModel{DB: db},
+		orders: pg.NewOrderModel(db),
 	}
 
 	mux := app.routes()
@@ -46,15 +45,4 @@ func main() {
 	infoLog.Printf("starting web server on %s", app.url)
 	err = srv.ListenAndServe()
 	errLog.Fatal(err)
-}
-
-func openDb(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
 }

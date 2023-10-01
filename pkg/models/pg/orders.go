@@ -12,6 +12,12 @@ type OrderModel struct {
 	DB *sql.DB
 }
 
+func NewOrderModel(db *sql.DB) *OrderModel{
+	return &OrderModel{
+		DB: db,
+	}
+}
+
 func (om *OrderModel) Insert(productName string) (int, error) {
 	query := `INSERT INTO orders (product_name, created) 
 	VALUES ($1, NOW()) RETURNING id`
