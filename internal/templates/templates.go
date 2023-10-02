@@ -7,7 +7,7 @@ import (
 )
 
 type TemplateData struct {
-	Order *models.Order
+	Order    *models.Order
 	LastFive []*models.Order
 }
 

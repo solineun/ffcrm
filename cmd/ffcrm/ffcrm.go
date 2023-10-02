@@ -1,48 +1,88 @@
 package main
 
 import (
-	"log"
+	"database/sql"
+	"fmt"
 	"net/http"
-	"os"
+
+	"github.com/solineun/ffcrm/internal/applogic"
+	lg "github.com/solineun/ffcrm/pkg/loggerimpl"
 	"github.com/solineun/ffcrm/pkg/models/pg"
+	"github.com/solineun/ffcrm/pkg/models/tmplcache"
 
 	_ "github.com/lib/pq"
 )
 
-type application struct {
-	url string
-	errLog  *log.Logger
-	infoLog *log.Logger
-	orders *pg.OrderModel
-}
+var app *applogic.Application
+const URL string = "localhost:8080"
+var logger = lg.NewLogger(nil, nil)
+var srv *http.Server
 
 func main() {
-	var infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	var errLog = log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-
 	pgConfig := getConfig()
 	db, err := openDb(pgConfig.format())
 	if err != nil {
-		errLog.Fatal(err)
+		logger.Fatal(err)
 	}
 	defer db.Close()
 
-	app := application {
-		url: "localhost:8080",
-		errLog:  errLog,
-		infoLog: infoLog,
-		orders: pg.NewOrderModel(db),
+	cache, err := tmplcache.NewTemplateCache("./ui/html/")
+	if err != nil {
+		logger.Fatal(err)
 	}
 
-	mux := app.routes()
+	ffDb := pg.NewFfCrmDb(db)
 
-	srv := &http.Server {
-		Addr:     app.url,
-		ErrorLog: errLog,
-		Handler:  mux,
+	app = applogic.NewApplication(
+		cache,
+		logger,
+		ffDb,
+	)	
+
+	mux := app.Routes()
+
+	srv = &http.Server{
+		Addr: URL,
+		ErrorLog: lg.DefaultErr,
+		Handler: mux,
 	}
 
-	infoLog.Printf("starting web server on %s", app.url)
+	logger.Printf("starting web server on %s", URL)
 	err = srv.ListenAndServe()
-	errLog.Fatal(err)
+	logger.Fatal(err)
+}
+
+type pgConfig struct {
+	host string
+	port uint16
+	user string
+	passwd string
+	dbName string
+}
+
+func getConfig() pgConfig {
+	return pgConfig {
+		host: "localhost",
+		port:      5432,
+		user: "postgres",
+		passwd: "pass",
+		dbName: "ffcrm",
+	}
+}
+
+func (pgc pgConfig) format() string {
+	return fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    pgc.host, pgc.port, pgc.user, pgc.passwd, pgc.dbName)	
+}
+
+func openDb(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }

@@ -8,22 +8,18 @@ import (
 	"github.com/lib/pq"
 )
 
-type OrderModel struct {
-	DB *sql.DB
+type OrderModel struct {}
+
+func NewOrderModel() *OrderModel{
+	return &OrderModel{}
 }
 
-func NewOrderModel(db *sql.DB) *OrderModel{
-	return &OrderModel{
-		DB: db,
-	}
-}
-
-func (om *OrderModel) Insert(productName string) (int, error) {
+func (om *OrderModel) InsertOrder(productName string) (int, error) {
 	query := `INSERT INTO orders (product_name, created) 
 	VALUES ($1, NOW()) RETURNING id`
 
 	var id int
-	err := om.DB.QueryRow(query, productName).Scan(&id)
+	err := ffcrmDb.QueryRow(query, productName).Scan(&id)
 	if err, ok := err.(*pq.Error); ok {
 		if err.Code.Name() == "string_data_right_truncation" {
 			return 0, models.ErrLongValue
@@ -34,12 +30,12 @@ func (om *OrderModel) Insert(productName string) (int, error) {
 	return id, nil
 }
 
-func (om *OrderModel) Get(prId int) (*models.Order, error) {
+func (om *OrderModel) GetOrderById(productId int) (*models.Order, error) {
 	query := `SELECT * FROM orders WHERE id = $1`	
-	id := prId
+	id := productId
 	
 	order := new(models.Order)
-	err := om.DB.QueryRow(query, &id).Scan(&order.Id, &order.ProductName, &order.Created)
+	err := ffcrmDb.QueryRow(query, &id).Scan(&order.Id, &order.ProductName, &order.Created)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -50,7 +46,7 @@ func (om *OrderModel) Get(prId int) (*models.Order, error) {
 	return order, nil
 }
 
-func (om *OrderModel) Latest() ([]*models.Order, error) {
+func (om *OrderModel) LatestFiveOrders() ([]*models.Order, error) {
 	query := `SELECT sub.* 
 				FROM (SELECT * 
 					FROM orders 
@@ -59,7 +55,7 @@ func (om *OrderModel) Latest() ([]*models.Order, error) {
 					) sub 
 				ORDER BY created ASC`
 
-	rows, err := om.DB.Query(query)
+	rows, err := ffcrmDb.Query(query)
 	if err != nil {
 		return nil, err
 	}
