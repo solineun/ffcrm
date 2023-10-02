@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"solineun/ffcrm/pkg/models/pg"
+	"github.com/solineun/ffcrm/pkg/models/pg"
 
 	_ "github.com/lib/pq"
 )

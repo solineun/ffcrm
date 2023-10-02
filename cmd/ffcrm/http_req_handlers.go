@@ -5,14 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"solineun/ffcrm/pkg/models"
+	"github.com/solineun/ffcrm/pkg/models"
 	"strconv"
 )
-
-type templateData struct {
-	Order *models.Order
-	LastFive []*models.Order
-}
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
@@ -48,7 +43,7 @@ func (app *application) showOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	order, err := app.orders.Get(&id)
+	order, err := app.orders.Get(id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			app.notFound(w)

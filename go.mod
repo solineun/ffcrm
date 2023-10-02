@@ -1,4 +1,4 @@
-module solineun/ffcrm
+module github.com/solineun/ffcrm
 
 go 1.18
 

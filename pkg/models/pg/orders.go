@@ -3,7 +3,7 @@ package pg
 import (
 	"database/sql"
 	"errors"
-	"solineun/ffcrm/pkg/models"
+	"github.com/solineun/ffcrm/pkg/models"
 
 	"github.com/lib/pq"
 )
@@ -34,8 +34,9 @@ func (om *OrderModel) Insert(productName string) (int, error) {
 	return id, nil
 }
 
-func (om *OrderModel) Get(id *int) (*models.Order, error) {
+func (om *OrderModel) Get(prId int) (*models.Order, error) {
 	query := `SELECT * FROM orders WHERE id = $1`	
+	id := prId
 	
 	order := new(models.Order)
 	err := om.DB.QueryRow(query, &id).Scan(&order.Id, &order.ProductName, &order.Created)
