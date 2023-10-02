@@ -1,4 +1,4 @@
-package main
+package templates
 
 import (
 	"html/template"
@@ -6,12 +6,12 @@ import (
 	"github.com/solineun/ffcrm/pkg/models"
 )
 
-type templateData struct {
+type TemplateData struct {
 	Order *models.Order
 	LastFive []*models.Order
 }
 
-type CacheStorage interface {
+type TemplateCacheStorage interface {
 	GetTemplate(name string) (*template.Template, bool)
 	InsertTemplate(name string, t *template.Template)
 }
