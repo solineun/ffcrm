@@ -3,7 +3,7 @@ package pg
 import "database/sql"
 
 type FfcrmDbImpl struct {
-	OrderModel
+	orderModel
 }
 
 var ffcrmDb *sql.DB

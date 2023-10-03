@@ -8,13 +8,9 @@ import (
 	"github.com/lib/pq"
 )
 
-type OrderModel struct {}
+type orderModel struct {}
 
-func NewOrderModel() *OrderModel{
-	return &OrderModel{}
-}
-
-func (om *OrderModel) InsertOrder(productName string) (int, error) {
+func (om *orderModel) InsertOrder(productName string) (int, error) {
 	query := `INSERT INTO orders (product_name, created) 
 	VALUES ($1, NOW()) RETURNING id`
 
@@ -30,7 +26,7 @@ func (om *OrderModel) InsertOrder(productName string) (int, error) {
 	return id, nil
 }
 
-func (om *OrderModel) GetOrderById(productId int) (*models.Order, error) {
+func (om *orderModel) GetOrderById(productId int) (*models.Order, error) {
 	query := `SELECT * FROM orders WHERE id = $1`	
 	id := productId
 	
@@ -46,7 +42,7 @@ func (om *OrderModel) GetOrderById(productId int) (*models.Order, error) {
 	return order, nil
 }
 
-func (om *OrderModel) LatestFiveOrders() ([]*models.Order, error) {
+func (om *orderModel) LatestFiveOrders() ([]*models.Order, error) {
 	query := `SELECT sub.* 
 				FROM (SELECT * 
 					FROM orders 

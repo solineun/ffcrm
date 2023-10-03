@@ -1,26 +1,21 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"net/http"
-
 	"github.com/solineun/ffcrm/internal/applogic"
 	lg "github.com/solineun/ffcrm/pkg/loggerimpl"
 	"github.com/solineun/ffcrm/pkg/models/pg"
 	"github.com/solineun/ffcrm/pkg/models/tmplcache"
-
-	_ "github.com/lib/pq"
 )
 
 var app *applogic.Application
 const URL string = "localhost:8080"
-var logger = lg.NewLogger(nil, nil)
+var logger = lg.NewLogger()
 var srv *http.Server
 
 func main() {
-	pgConfig := getConfig()
-	db, err := openDb(pgConfig.format())
+	pgConfig := GetConfig()
+	db, err := OpenDb(pgConfig.Format())
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -43,7 +38,7 @@ func main() {
 
 	srv = &http.Server{
 		Addr: URL,
-		ErrorLog: lg.DefaultErr,
+		ErrorLog: logger.ErrLog,
 		Handler: mux,
 	}
 
@@ -52,37 +47,3 @@ func main() {
 	logger.Fatal(err)
 }
 
-type pgConfig struct {
-	host string
-	port uint16
-	user string
-	passwd string
-	dbName string
-}
-
-func getConfig() pgConfig {
-	return pgConfig {
-		host: "localhost",
-		port:      5432,
-		user: "postgres",
-		passwd: "pass",
-		dbName: "ffcrm",
-	}
-}
-
-func (pgc pgConfig) format() string {
-	return fmt.Sprintf("host=%s port=%d user=%s "+
-    "password=%s dbname=%s sslmode=disable",
-    pgc.host, pgc.port, pgc.user, pgc.passwd, pgc.dbName)	
-}
-
-func openDb(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
-}
