@@ -15,7 +15,7 @@ type PgConfig struct {
 	dbName string
 }
 
-func GetConfig() PgConfig {
+func GetPgConfig() PgConfig {
 	return PgConfig {
 		host: "localhost",
 		port:      5432,

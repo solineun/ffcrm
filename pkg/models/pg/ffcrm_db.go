@@ -2,13 +2,13 @@ package pg
 
 import "database/sql"
 
-type FfcrmDbImpl struct {
+type FFcrmDBadapt struct {
 	orderModel
 }
 
-var ffcrmDb *sql.DB
+var ffcrmDB *sql.DB
 
-func NewFfCrmDb(db *sql.DB) *FfcrmDbImpl {
-	ffcrmDb = db	
-	return &FfcrmDbImpl{}
+func NewFFcrmDB(db *sql.DB) *FFcrmDBadapt {
+	ffcrmDB = db	
+	return &FFcrmDBadapt{}
 }
