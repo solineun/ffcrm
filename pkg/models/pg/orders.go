@@ -58,7 +58,7 @@ func (om *orderModel) LatestFiveOrders() ([]*models.Order, error) {
 	defer rows.Close()
 
 	var orders []*models.Order
-	
+		
 	for rows.Next() {
 		o := new(models.Order)
 		if err := rows.Scan(

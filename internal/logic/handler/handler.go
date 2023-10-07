@@ -10,15 +10,3 @@ type orderHandler interface {
 	ShowOrder(w http.ResponseWriter, r *http.Request)
 	CreateOrder(w http.ResponseWriter, r *http.Request)
 }
-
-type HandlerAdapter struct {
-	order orderAdapter
-}
-
-func (h HandlerAdapter) Home(w http.ResponseWriter, r *http.Request) {
-	
-}
-
-type orderAdapter struct {
-
-}
