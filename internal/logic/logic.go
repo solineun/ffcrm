@@ -1,16 +1,12 @@
 package logic
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 
 	"github.com/solineun/ffcrm/internal/logic/handler"
 	"github.com/solineun/ffcrm/internal/logic/logger"
 	"github.com/solineun/ffcrm/internal/logic/storage"
-	"github.com/solineun/ffcrm/pkg/logadapt"
-	"github.com/solineun/ffcrm/pkg/models"
-	"github.com/solineun/ffcrm/pkg/models/pg"
 )
 
 type Logic interface {
@@ -27,7 +23,7 @@ type LogicAdapter struct {
 // Home implements Handler.
 func (la *LogicAdapter) Home(w http.ResponseWriter, r *http.Request) {
 	orders, err := la.db.LatestFiveOrders()
-	if err != nil && !errors.Is(err, models.ErrNoRecord) {
+	if err != nil && !errors.Is(err, storage.ErrNoRecord) {
 		la.errLog.ServerError(w, err)
 	}
 	resp := []byte{}
@@ -37,6 +33,7 @@ func (la *LogicAdapter) Home(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
+//ServerError implements ErrLogger.
 func (la *LogicAdapter) ServerError(w http.ResponseWriter, err error) {
 	la.errLog.ServerError(w, err)
 }
@@ -51,10 +48,10 @@ func (la *LogicAdapter) Printf(format string, v any) {
 	la.infoLog.Printf(format, v)
 }
 
-func NewLogicAdapter(db *sql.DB) *LogicAdapter {
+func NewLogicAdapter(errLog logger.ErrLogger, infoLog logger.InfoLogger, db storage.FFcrmDB) *LogicAdapter {
 	return &LogicAdapter{
-		errLog: logadapt.NewLoggerAdapter(),
-		infoLog: logadapt.NewLoggerAdapter(),
-		db:  pg.NewFFcrmDB(db),
+		errLog: errLog,
+		infoLog: infoLog,
+		db:  db,
 	}
 }

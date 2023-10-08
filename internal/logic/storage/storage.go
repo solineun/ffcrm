@@ -11,3 +11,6 @@ type orders interface {
 	GetOrderById(productId int) (*models.Order, error)
 	LatestFiveOrders() ([]*models.Order, error) 
 }
+
+var ErrNoRecord = models.ErrNoRecord
+var ErrLongValue = models.ErrLongValue

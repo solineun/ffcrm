@@ -5,6 +5,7 @@ import (
 	"github.com/solineun/ffcrm/internal/logic"
 	"github.com/solineun/ffcrm/internal/server"
 	"github.com/solineun/ffcrm/pkg/logadapt"
+	"github.com/solineun/ffcrm/pkg/models/pg"
 )
 
 func main() {
@@ -14,10 +15,12 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	ffdb := pg.NewFFcrmDB(db)
 
 	logic := logic.NewLogicAdapter(
-		db,
-
+		log,
+		log,
+		ffdb,
 	)
 
 	srv := server.NewServerAdapter(
