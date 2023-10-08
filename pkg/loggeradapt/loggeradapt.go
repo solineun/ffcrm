@@ -1,4 +1,4 @@
-package logadapt
+package loggeradapt
 
 import (
 	"fmt"
@@ -13,8 +13,8 @@ type LoggerAdapter struct {
 	ErrLog *log.Logger
 }
 
-func NewLoggerAdapter() *LoggerAdapter {
-	return &LoggerAdapter{
+func NewLoggerAdapter() LoggerAdapter {
+	return LoggerAdapter{
 		InfoLog: log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime),
 		ErrLog: log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile),
 	}

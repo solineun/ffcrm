@@ -1,8 +1,8 @@
 package application
 
 import (
-	"github.com/solineun/ffcrm/internal/logic"
-	"github.com/solineun/ffcrm/internal/server"
+	"github.com/solineun/ffcrm/internal/application/logic"
+	"github.com/solineun/ffcrm/internal/application/server"
 )
 
 type Application struct {

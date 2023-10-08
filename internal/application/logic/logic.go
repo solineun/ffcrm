@@ -1,6 +1,13 @@
-package logger
+package logic
 
-import "net/http"
+import (
+	"net/http"
+)
+
+type Logic interface {
+	Logger
+	Handler
+}
 
 type Logger interface {
 	ErrLogger
@@ -16,3 +23,6 @@ type InfoLogger interface {
 	Printf(format string, v any)
 }
 
+type Handler interface {
+	Home(w http.ResponseWriter, r *http.Request)
+}

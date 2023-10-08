@@ -1,14 +1,6 @@
-package server
+package serveradapt
 
-import (
-	"net/http"
-)
-
-type Server interface {
-	ListenAndServe() error
-	HandleFunc(string, func(http.ResponseWriter, *http.Request))
-	GetAddr() string
-}
+import "net/http"
 
 type ServerAdapter struct {
 	srv *http.Server
