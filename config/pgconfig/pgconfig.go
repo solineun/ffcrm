@@ -1,4 +1,4 @@
-package main
+package pgconfig
 
 import (
 	"database/sql"

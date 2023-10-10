@@ -1,4 +1,4 @@
-package main
+package srvconfig
 
 import "net/http"
 
