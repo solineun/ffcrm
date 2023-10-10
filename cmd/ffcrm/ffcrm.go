@@ -1,49 +1,30 @@
 package main
 
 import (
-	"net/http"
-	"github.com/solineun/ffcrm/internal/applogic"
-	lg "github.com/solineun/ffcrm/pkg/loggerimpl"
+	"log"
+
+	pgconf "github.com/solineun/ffcrm/config/pgconfig"
+	srvconf "github.com/solineun/ffcrm/config/srvconfig"
+	"github.com/solineun/ffcrm/internal/application"
+	"github.com/solineun/ffcrm/internal/logicadapt"
+	"github.com/solineun/ffcrm/internal/serveradapt"
 	"github.com/solineun/ffcrm/pkg/models/pg"
-	"github.com/solineun/ffcrm/pkg/models/tmplcache"
 )
 
-var app *applogic.Application
-const URL string = "localhost:8080"
-var logger = lg.NewLogger()
-var srv *http.Server
-
-func main() {
-	pgConfig := GetConfig()
-	db, err := OpenDb(pgConfig.Format())
+func main() {	
+	db, err := pgconf.OpenDb(pgconf.GetPgConfig().Format())
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
+		return
 	}
-	defer db.Close()
+	ffdb := pg.NewFFcrmDB(db)
+	
+	logic := logicadapt.NewLogicAdapter(ffdb)
+	srv := serveradapt.NewServerAdapter(srvconf.GetConfiguredSrv())
 
-	cache, err := tmplcache.NewTemplateCache("./ui/html/")
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	ffDb := pg.NewFfCrmDb(db)
-
-	app = applogic.NewApplication(
-		cache,
-		logger,
-		ffDb,
-	)	
-
-	mux := app.Routes()
-
-	srv = &http.Server{
-		Addr: URL,
-		ErrorLog: logger.ErrLog,
-		Handler: mux,
-	}
-
-	logger.Printf("starting web server on %s", URL)
-	err = srv.ListenAndServe()
-	logger.Fatal(err)
+	app := application.NewApplication(
+		logic, 
+		srv,
+	)
+	app.Execute()
 }
-

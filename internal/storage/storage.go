@@ -1,13 +1,16 @@
-package sql
+package storage
 
 import "github.com/solineun/ffcrm/pkg/models"
 
-type FfcrmDb interface {
-	Orders
+type FFcrmDB interface {
+	orders
 }
 
-type Orders interface {
+type orders interface {
 	InsertOrder(productName string) (int, error)
 	GetOrderById(productId int) (*models.Order, error)
 	LatestFiveOrders() ([]*models.Order, error) 
 }
+
+var ErrNoRecord = models.ErrNoRecord
+var ErrLongValue = models.ErrLongValue

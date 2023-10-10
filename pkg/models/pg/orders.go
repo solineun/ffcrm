@@ -15,7 +15,7 @@ func (om *orderModel) InsertOrder(productName string) (int, error) {
 	VALUES ($1, NOW()) RETURNING id`
 
 	var id int
-	err := ffcrmDb.QueryRow(query, productName).Scan(&id)
+	err := ffcrmDB.QueryRow(query, productName).Scan(&id)
 	if err, ok := err.(*pq.Error); ok {
 		if err.Code.Name() == "string_data_right_truncation" {
 			return 0, models.ErrLongValue
@@ -31,7 +31,7 @@ func (om *orderModel) GetOrderById(productId int) (*models.Order, error) {
 	id := productId
 	
 	order := new(models.Order)
-	err := ffcrmDb.QueryRow(query, &id).Scan(&order.Id, &order.ProductName, &order.Created)
+	err := ffcrmDB.QueryRow(query, &id).Scan(&order.Id, &order.ProductName, &order.Created)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -51,14 +51,14 @@ func (om *orderModel) LatestFiveOrders() ([]*models.Order, error) {
 					) sub 
 				ORDER BY created ASC`
 
-	rows, err := ffcrmDb.Query(query)
+	rows, err := ffcrmDB.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var orders []*models.Order
-	
+		
 	for rows.Next() {
 		o := new(models.Order)
 		if err := rows.Scan(
