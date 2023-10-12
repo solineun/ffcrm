@@ -1,14 +1,26 @@
 package pg
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-type FFcrmDBadapt struct {
-	orderModel
+type DB interface {
+	QueryRow(string, ...any) *sql.Row
+	Query(string, ...any) (*sql.Rows, error)
+	Select(interface{}, string, ...interface{}) error
 }
 
-var ffcrmDB *sql.DB
+type FFcrmDBadapt struct {
+	db DB
+}
 
-func NewFFcrmDB(db *sql.DB) *FFcrmDBadapt {
-	ffcrmDB = db	
-	return &FFcrmDBadapt{}
+func NewFFcrmDB(cfg Config) (*FFcrmDBadapt, error) {
+	dbConn, err := newConn(cfg)
+	if err != nil {
+		return nil, err
+	}
+	
+	return &FFcrmDBadapt{
+		db: dbConn,
+	}, nil
 }

@@ -1,7 +1,6 @@
 package logicadapt
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/solineun/ffcrm/internal/storage"
@@ -16,15 +15,7 @@ type LogicAdapter struct {
 
 // Home implements Handler.
 func (la *LogicAdapter) Home(w http.ResponseWriter, r *http.Request) {
-	orders, err := la.db.LatestFiveOrders()
-	if err != nil && !errors.Is(err, storage.ErrNoRecord) {
-		la.log.ServerError(w, err)
-	}
-	resp := []byte{}
-	for _, o := range orders {
-		resp = append(resp, []byte(o.Format())...)
-	}
-	w.Write(resp)
+	
 }
 
 //ServerError implements ErrLogger.

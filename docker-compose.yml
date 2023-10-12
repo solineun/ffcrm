@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:13.3
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "ffcrm-db"
+      POSTGRES_USER: "ffcrm-user"
+      POSTGRES_PASSWORD: "danilatoyotin"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata: /var/lib/postgresql/data
+      - ./assets/postgres/init.sql: /docker-entrypoint-init.db.d/1-schema.sql
+volumes:
+  pgdata:
+

@@ -12,13 +12,12 @@ import (
 )
 
 func main() {	
-	db, err := pgconf.OpenDb(pgconf.GetPgConfig().Format())
+	dbConf := pgconf.GetPgConfig()
+	ffdb, err := pg.NewFFcrmDB(dbConf)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
-	ffdb := pg.NewFFcrmDB(db)
-	
+		
 	logic := logicadapt.NewLogicAdapter(ffdb)
 	srv := serveradapt.NewServerAdapter(srvconf.GetConfiguredSrv())
 
