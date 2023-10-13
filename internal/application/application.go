@@ -18,8 +18,8 @@ func NewApplication(l logic.Logic, s server.Server) Application {
 }
 
 func (app Application) Execute() {
-	app.logic.Printf("starting web server on %s", app.srv.GetAddr())
-	app.srv.HandleFunc("/", app.logic.Home)
+	app.logic.Printf("starting web server%s", "")
+	app.srv.HandleFunc("GET", "/", app.logic.Home)
 
 	err := app.srv.ListenAndServe()
 	if err != nil {

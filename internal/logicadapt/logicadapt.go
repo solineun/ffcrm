@@ -3,6 +3,7 @@ package logicadapt
 import (
 	"net/http"
 
+	"github.com/solineun/ffcrm/internal/rbac"
 	"github.com/solineun/ffcrm/internal/storage"
 	la "github.com/solineun/ffcrm/pkg/loggeradapt"
 )
@@ -10,12 +11,8 @@ import (
 type LogicAdapter struct {
 	log la.LoggerAdapter
 	db  storage.FFcrmDB
-	
-}
+	rbac rbac.Rbac
 
-// Home implements Handler.
-func (la *LogicAdapter) Home(w http.ResponseWriter, r *http.Request) {
-	
 }
 
 //ServerError implements ErrLogger.
@@ -37,5 +34,6 @@ func NewLogicAdapter(db storage.FFcrmDB) *LogicAdapter {
 	return &LogicAdapter{
 		log: la.NewLoggerAdapter(),
 		db:  db,
+		rbac: nil,
 	}
 }

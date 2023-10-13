@@ -13,7 +13,7 @@ type Order struct {
 	ProductId int			`db:"product_id"`
 	CustomerId string		`db:"customer_id"`
 	StockLocation string	`db:"stock_location"`
-	Created time.Time		`db:"created"`
+	CreatedAt time.Time		`db:"created_at"`
 	Status Status			`db:"status"`
 }
 
@@ -32,8 +32,8 @@ type Product struct {
 	Name string			`db:"name"`
 	Description string	`db:"description"`
 	Metrics Metrics		`db:"metrics"`
-	Created time.Time	`db:"created"`
-	Updated time.Time	`db:"updated"`
+	CreatedAt time.Time	`db:"created_at"`
+	UpdatedAt time.Time	`db:"updated_at"`
 }
 
 type Metrics struct {
@@ -60,6 +60,11 @@ const (
 	ADMIN Role = "ADMIN"
 	CUSTOMER Role = "CUSTOMER"
 )
+
+type Credentials struct {
+	Password string `json:"password", db:"password"`
+	Username string `json:"username", db:"username"`
+}
 
 type MarketsOrders struct {
 	OrderId string

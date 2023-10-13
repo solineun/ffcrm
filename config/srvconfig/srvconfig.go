@@ -1,9 +1,14 @@
 package srvconfig
 
-import "net/http"
+import (
+	"net/http"
+	"time"
+)
 
 func GetConfiguredSrv() *http.Server {
 	return &http.Server{
-		Addr: "localhost:8080",
+		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  10 * time.Second,	
 	}
 }
+
