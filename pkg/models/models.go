@@ -28,7 +28,7 @@ const (
 )
 
 type Product struct {
-	Id int				`db:"id"`
+	Id string			`db:"id"`
 	Name string			`db:"name"`
 	Description string	`db:"description"`
 	Metrics Metrics		`db:"metrics"`
